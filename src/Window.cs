@@ -1,5 +1,6 @@
 using System;
 using Luna.Editor;
+using Luna.IO;
 using SDL2;
 
 namespace Luna
@@ -70,13 +71,15 @@ namespace Luna
                 // Aqui você desenha coisas...
                 UIButton button = new UIButton
                 {
-                    X =  Width / 2,
-                    Y = Height / 2,
+                    X =  100,
+                    Y = 100,
                     Width = 200,
                     Height = 100,
                     Text = "Click Me",
                 };
                 button.Draw(_renderer);
+
+                
             SDL.SDL_RenderPresent(_renderer);
         }
 
@@ -87,6 +90,9 @@ namespace Luna
     {
         while (SDL.SDL_PollEvent(out SDL.SDL_Event e) == 1)
         {
+            Keyboard.ProcessEvent(e);
+            Mouse.ProcessEvent(e);
+            
             if (e.type == SDL.SDL_EventType.SDL_QUIT)
                 IsRunning = false;
         }
