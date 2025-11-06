@@ -1,4 +1,5 @@
 using System;
+using Luna.Editor;
 using SDL2;
 
 namespace Luna
@@ -9,8 +10,17 @@ namespace Luna
     private IntPtr _renderer;
     public bool IsRunning { get; private set; }
 
+    public int Width { get; private set; }
+    public int Height { get; private set; }
+
+    public string Title { get; private set; }
+
     public Window(string title, int width, int height)
     {
+        this.Width = width;
+        this.Height = height;
+        this.Title = title;
+
         // Inicializa o SDL (vídeo)
         if (SDL.SDL_Init(SDL.SDL_INIT_VIDEO) < 0)
         {
@@ -57,8 +67,16 @@ namespace Luna
             SDL.SDL_SetRenderDrawColor(_renderer, 0, 1, 2, 255);
             SDL.SDL_RenderClear(_renderer);
 
-            // Aqui você desenha coisas...
-
+                // Aqui você desenha coisas...
+                UIButton button = new UIButton
+                {
+                    X =  Width / 2,
+                    Y = Height / 2,
+                    Width = 200,
+                    Height = 100,
+                    Text = "Click Me",
+                };
+                button.Draw(_renderer);
             SDL.SDL_RenderPresent(_renderer);
         }
 
