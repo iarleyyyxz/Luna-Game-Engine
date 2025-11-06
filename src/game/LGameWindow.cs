@@ -52,8 +52,7 @@ namespace Luna.Game
 
             gws.IsMultiThreaded = false;
 
-            gws.RenderFrequency = settings.RenderFrequency;
-            gws.UpdateFrequency = settings.UpdateFrequency;
+            SetFrequency(settings.RenderFrequency, settings.UpdateFrequency);
 
             nws.APIVersion = Version.Parse("4.6.6");
  
