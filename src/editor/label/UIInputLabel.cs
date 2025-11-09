@@ -3,7 +3,7 @@ using Luna.Util;
 using SDL2;
 using System;
 
-namespace Luna.Editor.UI
+namespace Luna.Editor
 {
     public class UIInputLabel : UIElement
     {
@@ -48,6 +48,7 @@ namespace Luna.Editor.UI
             {
                 backspaceLock = false; // libera para o próximo backspace
             }
+
         }
 
         private void BlinkCaret()

@@ -3,7 +3,7 @@ using SDL2;
 using Luna.IO;
 using Luna.Editor;
 using Luna.Util;
-using Luna.Editor.UI;
+using Luna.Preferences;
 
 public class Window
 {
@@ -17,7 +17,9 @@ public class Window
     public int Height { get; set; }
     public string Title { get; set; }
 
-    bool isFullscreen = false;
+    private UIPanel panel;
+
+    bool isFullscreen = true;
 
     public Window(string title, int width, int height)
     {
@@ -39,15 +41,34 @@ public class Window
 
         Font.Init(_renderer, "assets/SORA-REGULAR.ttf", 16);
 
-        // ✅ Criamos UI apenas 1 vez
-        uIInputLabel = new UIInputLabel
+        // Supondo que você já tenha texturas para checkbox
+        IntPtr texOn = LoadTexture(_renderer, "assets/icons/CheckBoxIconLuna.png");
+        IntPtr texOff = LoadTexture(_renderer, "assets/icons/CheckBoxIconLuna2.png");
+
+        panel = new UIPanel
         {
-            X = 20,
+            X = 50,
             Y = 50,
-            Width = 200,
-            Height = 24
+            Width = 300,
+            Height = 200,
+            Title = "Meu Painel Genérico"
         };
+
+        // Criar outra UIElement qualquer (ex.: um botão ou label fictício)
+
+
+        // Criar grupo de checkboxes
+        var group = new UICheckboxGroup { Layout = Orientation.Vertical, Spacing = 10 };
+        group.Checkboxes.Add(new UICheckBox(texOn, texOff, "Opção 1"));
+        group.Checkboxes.Add(new UICheckBox(texOn, texOff, "Opção 2"));
+
+        // Adicionar grupo ao painel
+        
+        panel.AddChild(group);
     
+
+
+
 
 
         IsRunning = true;
@@ -64,11 +85,10 @@ public class Window
 
             // ✅ Atualiza UI
             Time.Update();
-            uIInputLabel.Update();
+            panel.Update();
+            panel.Draw(_renderer);
 
-            uIInputLabel.Draw(_renderer);
-
-
+            
             SDL.SDL_RenderPresent(_renderer);
         }
 
@@ -124,5 +144,22 @@ public class Window
         SDL.SDL_DestroyRenderer(_renderer);
         SDL.SDL_DestroyWindow(_window);
         SDL.SDL_Quit();
+        Font.Quit();
+    }
+
+    public static IntPtr LoadTexture(IntPtr renderer, string filePath)
+    {
+        IntPtr surface = SDL_image.IMG_Load(filePath);
+
+        if (surface == IntPtr.Zero)
+            throw new Exception("Erro ao carregar imagem: " + SDL.SDL_GetError());
+
+        IntPtr texture = SDL.SDL_CreateTextureFromSurface(renderer, surface);
+        SDL.SDL_FreeSurface(surface);
+
+        if (texture == IntPtr.Zero)
+            throw new Exception("Erro ao criar textura: " + SDL.SDL_GetError());
+
+        return texture;
     }
 }
