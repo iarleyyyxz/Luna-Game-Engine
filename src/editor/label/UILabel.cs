@@ -4,18 +4,26 @@ namespace Luna.Editor
 {
     public class UILabel : UIElement
     {
-
         public int Size;
-        public string Label;
+        public string Text;
 
-        public UILabel(string label, int size)
+        public UILabel(string text, int size = 16)
         {
-            Label = label;
+            Text = text;
             Size = size;
+            Width = Font.Width(text);
+            Height = Font.Height(text);
         }
+
         public override void Draw(nint renderer)
         {
-            Font.Draw(renderer, Label, X, Y + Size + 3, 255, 255, 255);
+            // Desenha diretamente na posição relativa X, Y
+            Font.Draw(renderer, Text, X, Y, 255, 255, 255);
+
+            // Atualiza largura e altura para layout automático
+            var (w, h) = Font.Measure(Text);
+            Width = w;
+            Height = h;
         }
     }
 }

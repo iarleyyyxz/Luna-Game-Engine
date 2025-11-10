@@ -11,8 +11,12 @@ namespace Luna.Editor
         public Action? OnClick;
         public Action? OnHover;
 
-
         public bool IsMouseHovered = false;
+
+        public UIButton(String text)
+        {
+            Text = text;
+        }
 
         public override void Draw(IntPtr renderer)
         {

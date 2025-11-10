@@ -5,11 +5,6 @@ using System.Collections.Generic;
 
 namespace Luna.Editor
 {
-    public enum Orientation
-    {
-        Horizontal,
-        Vertical
-    }
 
     public class UICheckboxGroup : UIElement
     {

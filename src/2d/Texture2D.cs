@@ -40,8 +40,11 @@ namespace Luna.g2d
         public int Width { get; private set; }
         public int Height { get; private set; }
 
+        public string Path { get; set; } = "/.";
+
         public Texture2D(string path)
         {
+            Path = path;
             Handle = GL.GenTexture();
             Bind();
 

@@ -1,4 +1,5 @@
 using Luna.g2d;
+using Luna.g2d.Renderer;
 
 namespace Luna.Core
 {
@@ -20,6 +21,7 @@ namespace Luna.Core
     {
 
         private static Dictionary<string, Texture2D> textures = new();
+        private static Dictionary<string, Shader> shaders = new();
 
         /// <summary>
         /// Gets the resource type based on the file extension.
@@ -87,6 +89,38 @@ namespace Luna.Core
             }
         }
 
+        public static Shader LoadShader(string vertPath, string fragPath)
+        {
+            string key = vertPath + "|" + fragPath;
+
+            if (shaders.ContainsKey(key))
+                return shaders[key];
+
+            Shader shader = new Shader(vertPath, fragPath);
+            shaders[key] = shader;
+
+            return shader;
+        }
+
+        public static Shader GetShader(string vertPath, string fragPath)
+        {
+            string key = vertPath + "|" + fragPath;
+            shaders.TryGetValue(key, out var shader);
+            return shader;
+        }
+
+        public static void UnloadShader(string vertPath, string fragPath)
+        {
+            string key = vertPath + "|" + fragPath;
+
+            if (shaders.ContainsKey(key))
+            {
+                shaders[key].Dispose(); // se sua classe shader tiver Dispose
+                shaders.Remove(key);
+            }
+        }
+
+        
         /// <summary>
         /// Unloads all loaded resources.
         /// </summary>
