@@ -82,8 +82,6 @@ namespace Luna.Editor
             SDL.SDL_SetRenderDrawColor(renderer, 200, 120, 50, 255);
             SDL.SDL_Rect box = new SDL.SDL_Rect { x = 100, y = 80, w = 120, h = 120 };
             SDL.SDL_RenderFillRect(renderer, ref box);
-
-            // Aqui depois entra sua engine 😎
         }
     }
 }
