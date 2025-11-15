@@ -50,9 +50,10 @@ namespace Luna.Renderer
 
         // Criar textura SDL que vai receber pixels do OpenGL
         SDLTexture = SDL.SDL_CreateTexture(sdlRenderer,
-            SDL.SDL_PIXELFORMAT_RGBA8888,
-            (int)SDL.SDL_TextureAccess.SDL_TEXTUREACCESS_STREAMING,
-            width, height);
+    SDL.SDL_PIXELFORMAT_ABGR8888,      // <--- ALTERE AQUI
+    (int)SDL.SDL_TextureAccess.SDL_TEXTUREACCESS_STREAMING,
+    width, height);
+
     }
 
     public void Bind() => GL.BindFramebuffer(FramebufferTarget.Framebuffer, FBO);
@@ -65,7 +66,7 @@ namespace Luna.Renderer
             // copia os pixels do OpenGL
             
             GL.BindTexture(TextureTarget.Texture2D, ColorTex);
-            GL.GetTexImage(TextureTarget.Texture2D, 0, PixelFormat.Bgra, PixelType.UnsignedByte, pixels);
+            GL.GetTexImage(TextureTarget.Texture2D, 0, PixelFormat.Rgba, PixelType.UnsignedByte, pixels);
             GL.BindTexture(TextureTarget.Texture2D, 0);
 
             // atualiza a SDL texture
