@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("luna game engine")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+0debdf354c1820f1ef50330de3bedf79e0606242")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+f9212625705cdc363c7bb837f588214a205dae04")]
 [assembly: System.Reflection.AssemblyProductAttribute("luna game engine")]
 [assembly: System.Reflection.AssemblyTitleAttribute("luna game engine")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

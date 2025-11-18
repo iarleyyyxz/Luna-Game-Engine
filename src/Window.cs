@@ -3,7 +3,6 @@ using SDL2;
 using Luna.IO;
 using Luna.Editor;
 using Luna.Util;
-using Luna.Preferences;
 using OpenTK.Graphics.OpenGL4;
 using Luna.Renderer;
 using Luna.g2d;
@@ -15,15 +14,23 @@ public class Window
 {
     private IntPtr _window;
     private IntPtr _renderer;
+
     public bool IsRunning { get; private set; }
 
     public static int Width { get; set; }
     public static int Height { get; set; }
     public string Title { get; set; }
 
-    bool isFullscreen = true;
+    private bool isFullscreen = true;
 
     private FrameBuffer2D framebuffer;
+
+    // UI
+    private UIViewport viewport;
+    private PlayPauseBar playPauseBar;
+
+    // Debug object
+    private GameObject player;
 
     public Window(string title, int width, int height)
     {
@@ -31,6 +38,19 @@ public class Window
         Height = height;
         Title = title;
 
+        InitSDL();
+        InitOpenGL();
+
+        LoadFonts();
+        CreateFrameBuffer();
+        CreateScene();
+        CreateUI();
+
+        IsRunning = true;
+    }
+
+    private void InitSDL()
+    {
         if (SDL.SDL_Init(SDL.SDL_INIT_VIDEO) < 0)
             throw new Exception(SDL.SDL_GetError());
 
@@ -40,60 +60,86 @@ public class Window
         SDL.SDL_GL_SetAttribute(SDL.SDL_GLattr.SDL_GL_DOUBLEBUFFER, 1);
         SDL.SDL_GL_SetAttribute(SDL.SDL_GLattr.SDL_GL_DEPTH_SIZE, 24);
 
-        _window = SDL.SDL_CreateWindow(title, SDL.SDL_WINDOWPOS_CENTERED, SDL.SDL_WINDOWPOS_CENTERED, width, height, SDL.SDL_WindowFlags.SDL_WINDOW_OPENGL | SDL.SDL_WindowFlags.SDL_WINDOW_SHOWN |
-        SDL.SDL_WindowFlags.SDL_WINDOW_RESIZABLE);
+        _window = SDL.SDL_CreateWindow(
+            Title,
+            SDL.SDL_WINDOWPOS_CENTERED,
+            SDL.SDL_WINDOWPOS_CENTERED,
+            Width,
+            Height,
+            SDL.SDL_WindowFlags.SDL_WINDOW_OPENGL |
+            SDL.SDL_WindowFlags.SDL_WINDOW_SHOWN |
+            SDL.SDL_WindowFlags.SDL_WINDOW_RESIZABLE
+        );
 
         IntPtr glContext = SDL.SDL_GL_CreateContext(_window);
         if (glContext == IntPtr.Zero)
             throw new Exception("GL Context Error: " + SDL.SDL_GetError());
 
         SDL.SDL_GL_MakeCurrent(_window, glContext);
-
-        // 6) VSync (0 = off, 1 = on, -1 = adaptive)
         SDL.SDL_GL_SetSwapInterval(1);
 
+        GL.LoadBindings(new OpenTKBindings());
 
-        OpenTK.Graphics.OpenGL4.GL.LoadBindings(new OpenTKBindings());
-        
         SetWindowIcon("assets/icons/LunaIcon.bmp");
+
         _renderer = SDL.SDL_CreateRenderer(
-                    _window,
-                    -1,
-                    SDL.SDL_RendererFlags.SDL_RENDERER_ACCELERATED | SDL.SDL_RendererFlags.SDL_RENDERER_PRESENTVSYNC
-                    );
+            _window,
+            -1,
+            SDL.SDL_RendererFlags.SDL_RENDERER_ACCELERATED |
+            SDL.SDL_RendererFlags.SDL_RENDERER_PRESENTVSYNC
+        );
 
-        if (_renderer == IntPtr.Zero)
-            throw new Exception("Renderer Error: " + SDL.SDL_GetError());
-
-        
-        //SDL.SDL_SetWindowFullscreen(_window, (uint)SDL.SDL_WindowFlags.SDL_WINDOW_FULLSCREEN_DESKTOP);
         SDL.SDL_SetWindowFullscreen(_window, (uint)SDL.SDL_WindowFlags.SDL_WINDOW_FULLSCREEN_DESKTOP);
-
         SDL.SDL_StartTextInput();
+    }
 
+    private void InitOpenGL()
+    {
+        GL.Enable(EnableCap.Blend);
+        GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
+    }
+
+    private void LoadFonts()
+    {
         Font.Init(_renderer, "assets/SORA-REGULAR.ttf", 16);
+    }
 
-        IntPtr texOn = LoadTexture(_renderer, "assets/icons/CheckBoxIconLuna.png");
-        IntPtr texOff = LoadTexture(_renderer, "assets/icons/CheckBoxIconLuna2.png");
-
+    private void CreateFrameBuffer()
+    {
         framebuffer = new FrameBuffer2D(_renderer, 640, 360);
-        GL.BindFramebuffer(FramebufferTarget.Framebuffer, framebuffer.FBO);
-        var status = GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer);
-        Console.WriteLine("FBO Status: " + status);
-        GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+    }
 
-        GameObject player = new GameObject("Player");
+    private void CreateScene()
+    {
+        Scene scene = new Scene("scene");
 
-var transform = player.AddComponent<Transform2D>();
-var renderer = player.AddComponent<SpriteRenderer>();
-renderer.Sprite = new Sprite2D("assets/textures/player.png");
-renderer.Sprite.Size = new Vector2(64,64);
-//renderer.Sprite.UV0 = new Vector2(1, 1);
-SceneManager.AddScene(new Scene("scene"));
-SceneManager.LoadScene("scene");
-SceneManager.CurrentScene.AddGameObject(player);
+        player = new GameObject("Player");
 
-        IsRunning = true;
+        var transform = player.AddComponent<Transform2D>();
+        transform.Position = new Vector2(300, 200);
+        transform.Scale = new Vector2(155, 155);
+
+        var renderer = player.AddComponent<SpriteRenderer>();
+        renderer.Sprite = new Sprite2D("assets/textures/player.png");
+
+        scene.AddGameObject(player);
+
+        SceneManager.AddScene(scene);
+        SceneManager.LoadScene("scene");
+    }
+
+    private void CreateUI()
+    {
+        // VIEWPORT where the game is rendered
+        viewport = new UIViewport(_renderer, 120, 120, 640, 360, framebuffer);
+        UIManager.Add(viewport);
+
+        // PLAY / PAUSE BAR
+        IntPtr playIcon = LoadTexture(_renderer, "assets/icons/LunaPlayIcon.png");
+        IntPtr pauseIcon = LoadTexture(_renderer, "assets/icons/LunaPauseIcon.png");
+
+        playPauseBar = new PlayPauseBar(playIcon, pauseIcon, viewport.X, viewport.Y - 50);
+        UIManager.Add(playPauseBar);
     }
 
     public void Run()
@@ -102,29 +148,33 @@ SceneManager.CurrentScene.AddGameObject(player);
         {
             ProcessEvents();
 
+            // Render Game World
             framebuffer.Bind();
             GL.Viewport(0, 0, framebuffer.Width, framebuffer.Height);
-            GL.ClearColor(1f, 0f, 0f, 1f);
+
+            GL.ClearColor(0.0f, 0.0f, 0.0f, 1f);
             GL.Clear(ClearBufferMask.ColorBufferBit);
-            
-            // render stage
-            SceneManager.CurrentScene.Update(Time.DeltaTime, Width, Height);
+
+            if (!SceneManager.CurrentScene.Paused)
+                SceneManager.CurrentScene.Update(Time.DeltaTime, framebuffer.Width, framebuffer.Height);
 
             framebuffer.Unbind();
-
             framebuffer.ReadToSDLTexture();
 
+            // Render UI + Framebuffer
             SDL.SDL_SetRenderDrawColor(_renderer, 25, 25, 25, 255);
             SDL.SDL_RenderClear(_renderer);
 
-            framebuffer.DrawSDL(120, 120, framebuffer.Width, framebuffer.Height);
+            UIManager.Draw(_renderer);
+            UIManager.Update();
 
             SDL.SDL_RenderPresent(_renderer);
+
+            Time.Update();
         }
 
         Quit();
     }
-
 
     private void ProcessEvents()
     {
@@ -133,40 +183,38 @@ SceneManager.CurrentScene.AddGameObject(player);
             Keyboard.ProcessEvent(e);
             Mouse.ProcessEvent(e);
 
-            if (e.type == SDL.SDL_EventType.SDL_KEYDOWN && e.key.keysym.sym == SDL.SDL_Keycode.SDLK_F11)
+            if (e.type == SDL.SDL_EventType.SDL_QUIT)
+                IsRunning = false;
+
+            if (e.type == SDL.SDL_EventType.SDL_KEYDOWN &&
+                e.key.keysym.sym == SDL.SDL_Keycode.SDLK_F11)
             {
                 ToggleFullscreen();
             }
 
-            if (e.type == SDL.SDL_EventType.SDL_WINDOWEVENT)
+            if (e.type == SDL.SDL_EventType.SDL_WINDOWEVENT &&
+                e.window.windowEvent == SDL.SDL_WindowEventID.SDL_WINDOWEVENT_SIZE_CHANGED)
             {
-                if (e.window.windowEvent == SDL.SDL_WindowEventID.SDL_WINDOWEVENT_SIZE_CHANGED)
-                {
-                    int w, h;
-                    SDL.SDL_GetWindowSize(_window, out w, out h);
-                    Width = w;
-                    Height = h;
-                    UIManager.OnResize(Width, Height);
-                }
+                SDL.SDL_GetWindowSize(_window, out int w, out int h);
+                Width = w;
+                Height = h;
+                UIManager.OnResize(w, h);
             }
-
-            if (e.type == SDL.SDL_EventType.SDL_QUIT)
-                    IsRunning = false;
         }
+    }
 
-        void ToggleFullscreen()
+    private void ToggleFullscreen()
+    {
+        if (!isFullscreen)
         {
-            if (!isFullscreen)
-            {
-                SDL.SDL_SetWindowFullscreen(_window, (uint)SDL.SDL_WindowFlags.SDL_WINDOW_FULLSCREEN_DESKTOP);
-                isFullscreen = true;
-            }
-            else
-            {
-                SDL.SDL_SetWindowFullscreen(_window, 0);
-                isFullscreen = false;
-            }
-
+            SDL.SDL_SetWindowFullscreen(_window,
+                (uint)SDL.SDL_WindowFlags.SDL_WINDOW_FULLSCREEN_DESKTOP);
+            isFullscreen = true;
+        }
+        else
+        {
+            SDL.SDL_SetWindowFullscreen(_window, 0);
+            isFullscreen = false;
         }
     }
 
@@ -181,17 +229,16 @@ SceneManager.CurrentScene.AddGameObject(player);
     public static IntPtr LoadTexture(IntPtr renderer, string filePath)
     {
         IntPtr surface = SDL_image.IMG_Load(filePath);
-
         if (surface == IntPtr.Zero)
-            throw new Exception("Error on load texture: " + SDL.SDL_GetError());
+            throw new Exception("Texture load error: " + SDL.SDL_GetError());
 
-        IntPtr texture = SDL.SDL_CreateTextureFromSurface(renderer, surface);
+        IntPtr tex = SDL.SDL_CreateTextureFromSurface(renderer, surface);
         SDL.SDL_FreeSurface(surface);
 
-        if (texture == IntPtr.Zero)
-            throw new Exception("Error on create texture: " + SDL.SDL_GetError());
+        if (tex == IntPtr.Zero)
+            throw new Exception("Texture create error: " + SDL.SDL_GetError());
 
-        return texture;
+        return tex;
     }
 
     private void SetWindowIcon(string path)
@@ -199,7 +246,7 @@ SceneManager.CurrentScene.AddGameObject(player);
         IntPtr icon = SDL.SDL_LoadBMP(path);
         if (icon == IntPtr.Zero)
         {
-            Console.WriteLine("Error on load icon: " + SDL.SDL_GetError());
+            Console.WriteLine("Icon load error: " + SDL.SDL_GetError());
             return;
         }
 

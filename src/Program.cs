@@ -1,6 +1,5 @@
 ﻿using System;
 using Luna.Ecs;
-using Luna.Preferences;
 using SDL2;
 using Luna;
 class Program

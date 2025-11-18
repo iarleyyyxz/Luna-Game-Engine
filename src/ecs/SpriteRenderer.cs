@@ -27,7 +27,7 @@ namespace Luna.Ecs
 
             Sprite.Position = new OpenTK.Mathematics.Vector2(t.Position.X, t.Position.Y);
             Sprite.Rotation = t.Rotation;
-            Sprite.Size = t.Scale * Sprite.Size;
+            Sprite.Size = t.Scale;
 
 
             Renderer2D.Draw(Sprite);

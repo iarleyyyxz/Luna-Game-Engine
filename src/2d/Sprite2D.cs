@@ -10,8 +10,8 @@ namespace Luna.g2d
         public Vector2 Position = Vector2.Zero;
         public Vector2 Size = Vector2.One; // in pixels
         public float Rotation = 0f; // degrees
-        public bool FlipX = false;
-        public bool FlipY = false;
+        public bool FlipX = true;
+        public bool FlipY = true;
         public Vector4 Color = Vector4.One; // rgba tint
         public int Layer = 0;
 

@@ -112,41 +112,55 @@ namespace Luna.g2d.Renderer
             return textureSlots.Count - 1;
         }
 
-        public void DrawSprite(Texture2D tex, Vector2 pos, Vector2 size, float rot, Vector4 color,
-                               Vector2 uv0, Vector2 uv1, bool flipX, bool flipY, int layer)
+        public void DrawSprite(
+            Texture2D tex, Vector2 pos, Vector2 size, float rot, Vector4 color,
+            Vector2 uv0, Vector2 uv1, bool flipX, bool flipY, int layer)
         {
             if (spriteCount >= MaxSprites)
-                Flush(1280, 720); // fallback
+                Flush(1280, 720);
 
             int texID = GetTextureSlot(tex);
 
-            // Pre-calc UVs
-            Vector2 uvBL = new(uv0.X, uv1.Y);
-            Vector2 uvBR = new(uv1.X, uv1.Y);
-            Vector2 uvTR = new(uv1.X, uv0.Y);
-            Vector2 uvTL = new(uv0.X, uv0.Y);
+            // UVs
+            Vector2 uvBL = new Vector2(uv0.X, uv1.Y);
+            Vector2 uvBR = new Vector2(uv1.X, uv1.Y);
+            Vector2 uvTR = new Vector2(uv1.X, uv0.Y);
+            Vector2 uvTL = new Vector2(uv0.X, uv0.Y);
 
-            if (flipX) (uvBL.X, uvBR.X, uvTR.X, uvTL.X) = (uvBR.X, uvBL.X, uvTL.X, uvTR.X);
-            if (flipY) (uvBL.Y, uvBR.Y, uvTR.Y, uvTL.Y) = (uvTR.Y, uvTL.Y, uvBR.Y, uvBL.Y);
+            if (flipX)
+                (uvBL.X, uvBR.X, uvTR.X, uvTL.X) = (uvBR.X, uvBL.X, uvTL.X, uvTR.X);
 
-            // Model matrix
+            if (flipY)
+                (uvBL.Y, uvBR.Y, uvTR.Y, uvTL.Y) = (uvTR.Y, uvTL.Y, uvBR.Y, uvBL.Y);
+
+            // MODEL MATRIX
             Matrix4 model =
-                Matrix4.CreateTranslation(-size.X / 2, -size.Y / 2, 0) *
-                Matrix4.CreateRotationZ(MathHelper.DegreesToRadians(rot)) *
-                Matrix4.CreateTranslation(size.X / 2, size.Y / 2, 0) *
                 Matrix4.CreateScale(size.X, size.Y, 1) *
+                Matrix4.CreateRotationZ(MathHelper.DegreesToRadians(rot)) *
                 Matrix4.CreateTranslation(pos.X, pos.Y, 0);
 
+            Vector4 p0 = new Vector4(-0.5f, -0.5f, 0, 1);
+            Vector4 p1 = new Vector4( 0.5f, -0.5f, 0, 1);
+            Vector4 p2 = new Vector4( 0.5f,  0.5f, 0, 1);
+            Vector4 p3 = new Vector4(-0.5f,  0.5f, 0, 1);
+
+            p0 = Vector4.TransformRow(p0, model);
+            p1 = Vector4.TransformRow(p1, model);
+            p2 = Vector4.TransformRow(p2, model);
+            p3 = Vector4.TransformRow(p3, model);
+
+
+            // WRITE TO VERTEX BUFFER
             int idx = spriteCount * QUAD_FLOATS;
 
-            // 4 vértices transformados
-            AddVertex(idx + 0, model * new Vector4(0, 1, 0, 1), uvBL, color, texID, layer);
-            AddVertex(idx + 10, model * new Vector4(1, 1, 0, 1), uvBR, color, texID, layer);
-            AddVertex(idx + 20, model * new Vector4(1, 0, 0, 1), uvTR, color, texID, layer);
-            AddVertex(idx + 30, model * new Vector4(0, 0, 0, 1), uvTL, color, texID, layer);
+            AddVertex(idx + 0,  p0, uvBL, color, texID, layer);  // BL
+            AddVertex(idx + 10, p1, uvBR, color, texID, layer);  // BR
+            AddVertex(idx + 20, p2, uvTR, color, texID, layer);  // TR
+            AddVertex(idx + 30, p3, uvTL, color, texID, layer);  // TL
 
             spriteCount++;
         }
+
 
         private void AddVertex(int index, Vector4 pos, Vector2 uv, Vector4 color, int texID, int layer)
         {

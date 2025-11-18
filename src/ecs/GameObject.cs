@@ -18,7 +18,7 @@ namespace Luna.Ecs
         {
             T c = new T { owner = this };
             components.Add(c);
-            return c; // Start será chamado na Scene.Start()
+            return c; // Start is called on Scene.Start()
         }
 
         public T GetComponent<T>() where T : Component
