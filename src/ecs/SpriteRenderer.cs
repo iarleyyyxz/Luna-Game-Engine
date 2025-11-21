@@ -7,29 +7,31 @@ namespace Luna.Ecs
     public class SpriteRenderer : Component
     {
         public Sprite2D Sprite;
+        private Transform2D transform;
 
         public override void Start()
         {
-            if (owner.GetComponent<Transform2D>() == null)
-                owner.AddComponent<Transform2D>();
-
-            if (Sprite == null)
-                Console.WriteLine($"[SpriteRenderer] Warning: GameObject '{owner.Name}' has no sprite!");
+            transform = owner.GetComponent<Transform2D>() ?? owner.AddComponent<Transform2D>();
         }
 
         public override void Update(float dt)
         {
-            Console.WriteLine($"Drawing sprite at {Sprite.Position} size {Sprite.Size}");
-            if (Sprite == null)
-                return;
+            if (Sprite == null || Sprite.Texture == null) return;
 
-            var t = owner.GetComponent<Transform2D>();
+            // ensure transform reference
+            if (transform == null) transform = owner.GetComponent<Transform2D>();
 
-            Sprite.Position = new OpenTK.Mathematics.Vector2(t.Position.X, t.Position.Y);
-            Sprite.Rotation = t.Rotation;
-            Sprite.Size = t.Scale;
+            // Remove subpixel jitter by rounding position (common for pixel-art)
+            Sprite.Position = new Vector2(
+                MathF.Round(transform.Position.X),
+                MathF.Round(transform.Position.Y)
+            );
 
+            Sprite.Size = new Vector2(transform.Scale.X, transform.Scale.Y);
 
+            Sprite.Rotation = transform.Rotation;
+
+            // queue for the renderer (draw will happen in the batch)
             Renderer2D.Draw(Sprite);
         }
     }

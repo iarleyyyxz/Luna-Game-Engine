@@ -34,10 +34,6 @@ namespace Luna.g2d.Scene
             currentScene?.Update(dt, sw, sh);
         }
 
-        /*public static void Render(SpriteBatch batch)
-        {
-            currentScene?.Render(batch);
-        }*/
     }
         
 }

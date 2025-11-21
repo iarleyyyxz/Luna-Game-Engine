@@ -31,21 +31,16 @@ namespace Luna.g2d.Scene
                 go.Start();
         }
 
-        public void Update(float dt, int screenW, int screenH)
+        public void Update(float dt, int w, int h)
         {
-            if (!Paused) {
-                Renderer2D.Begin();
+            Renderer2D.Begin();
 
-                foreach (var go in gameObjects) 
-                {
-                    go.Update(dt);
-                }
-                    
+            foreach (var go in gameObjects)
+                go.Update(dt);
 
-                Renderer2D.End(screenW, screenH);
-
-            }
+            Renderer2D.End(w, h);
         }
+
 
         public void Unload()
         {

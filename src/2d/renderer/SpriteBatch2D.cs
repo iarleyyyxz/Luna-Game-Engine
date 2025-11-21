@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using OpenTK.Graphics.OpenGL4;
-using OpenTK.Mathematics;
+using System.Numerics;
 
 namespace Luna.g2d.Renderer
 {
@@ -134,20 +134,20 @@ namespace Luna.g2d.Renderer
                 (uvBL.Y, uvBR.Y, uvTR.Y, uvTL.Y) = (uvTR.Y, uvTL.Y, uvBR.Y, uvBL.Y);
 
             // MODEL MATRIX
-            Matrix4 model =
-                Matrix4.CreateScale(size.X, size.Y, 1) *
-                Matrix4.CreateRotationZ(MathHelper.DegreesToRadians(rot)) *
-                Matrix4.CreateTranslation(pos.X, pos.Y, 0);
+            Matrix4x4 model =
+                Matrix4x4.CreateScale(size.X, size.Y, 1) *
+                Matrix4x4.CreateRotationZ(OpenTK.Mathematics.MathHelper.DegreesToRadians(rot)) *
+                Matrix4x4.CreateTranslation(pos.X, pos.Y, 0);
 
             Vector4 p0 = new Vector4(-0.5f, -0.5f, 0, 1);
             Vector4 p1 = new Vector4( 0.5f, -0.5f, 0, 1);
             Vector4 p2 = new Vector4( 0.5f,  0.5f, 0, 1);
             Vector4 p3 = new Vector4(-0.5f,  0.5f, 0, 1);
 
-            p0 = Vector4.TransformRow(p0, model);
-            p1 = Vector4.TransformRow(p1, model);
-            p2 = Vector4.TransformRow(p2, model);
-            p3 = Vector4.TransformRow(p3, model);
+            p0 = Vector4.Transform(p0, model);
+            p1 = Vector4.Transform(p1, model);
+            p2 = Vector4.Transform(p2, model);
+            p3 = Vector4.Transform(p3, model);
 
 
             // WRITE TO VERTEX BUFFER
@@ -195,7 +195,7 @@ namespace Luna.g2d.Renderer
 
             shader.Use();
 
-            Matrix4 proj = Matrix4.CreateOrthographicOffCenter(0, screenW, screenH, 0, -1, 1);
+            OpenTK.Mathematics.Matrix4 proj = OpenTK.Mathematics.Matrix4.CreateOrthographicOffCenter(0, screenW, screenH, 0, -1, 1);
             shader.SetMatrix4("projection", proj);
 
             // Bind textures

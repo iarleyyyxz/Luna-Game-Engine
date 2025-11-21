@@ -29,21 +29,21 @@ namespace Luna.Editor
             // ----------------------------
             // 1. RENDER PARA O FRAMEBUFFER
             // ----------------------------
-            framebuffer.Bind();
+        //    framebuffer.Bind();
 
-            GL.Viewport(0, 0, Width, Height);
-            GL.ClearColor(0.15f, 0.15f, 0.15f, 1f);
-            GL.Clear(ClearBufferMask.ColorBufferBit);
+         //   GL.Viewport(0, 0, Width, Height);
+         //   GL.ClearColor(0.15f, 0.15f, 0.15f, 1f);
+          //  GL.Clear(ClearBufferMask.ColorBufferBit);
 
-            if (!SceneManager.CurrentScene.Paused)
-                SceneManager.CurrentScene.Update(Time.DeltaTime, Width, Height);
+          //  if (!SceneManager.CurrentScene.Paused)
+          //      SceneManager.CurrentScene.Update(Time.DeltaTime, Width, Height);
 
-            framebuffer.Unbind();
+          //  framebuffer.Unbind();
 
             // -------------------------------------------
             // 2. TRANSFORMA O FRAMEBUFFER EM SDL TEXTURE
             // -------------------------------------------
-            framebuffer.ReadToSDLTexture();
+         //   framebuffer.ReadToSDLTexture();
 
             // -------------------------------------------
             // 3. DESENHA A CENA NA TELA (SDL_RenderCopy)

@@ -7,7 +7,7 @@ using OpenTK.Graphics.OpenGL4;
 using Luna.Renderer;
 using Luna.g2d;
 using Luna.Ecs;
-using OpenTK.Mathematics;
+using System.Numerics;
 using Luna.g2d.Scene;
 
 public class Window
@@ -121,6 +121,17 @@ public class Window
 
         var renderer = player.AddComponent<SpriteRenderer>();
         renderer.Sprite = new Sprite2D("assets/textures/player.png");
+
+        GameObject player2 = new GameObject("Player2");
+
+        var transform2 = player2.AddComponent<Transform2D>();
+        transform2.Position = new Vector2(50, 20);
+        transform2.Scale = new Vector2(400, 400);
+
+        var renderer2 = player2.AddComponent<SpriteRenderer>();
+        renderer2.Sprite = new Sprite2D("assets/textures/player.png");
+
+        scene.AddGameObject(player2);
 
         scene.AddGameObject(player);
 
