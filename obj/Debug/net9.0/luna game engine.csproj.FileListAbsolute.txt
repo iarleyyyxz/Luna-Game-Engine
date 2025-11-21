@@ -33,3 +33,26 @@ C:\Users\josy-\Documents\luna game engine\obj\Debug\net9.0\refint\luna game engi
 C:\Users\josy-\Documents\luna game engine\obj\Debug\net9.0\luna game engine.pdb
 C:\Users\josy-\Documents\luna game engine\obj\Debug\net9.0\luna game engine.genruntimeconfig.cache
 C:\Users\josy-\Documents\luna game engine\obj\Debug\net9.0\ref\luna game engine.dll
+C:\Users\josy-\Documents\luna game engine\bin\Debug\net9.0\SDL2.dll
+C:\Users\josy-\Documents\luna game engine\bin\Debug\net9.0\SDL2_image.dll
+C:\Users\josy-\Documents\luna game engine\bin\Debug\net9.0\SDL2_ttf.dll
+C:\Users\josy-\Documents\luna game engine\bin\Debug\net9.0\assets\icons\CheckBoxIconLuna.png
+C:\Users\josy-\Documents\luna game engine\bin\Debug\net9.0\assets\icons\CheckBoxIconLuna2.png
+C:\Users\josy-\Documents\luna game engine\bin\Debug\net9.0\assets\icons\LunaIcon.bmp
+C:\Users\josy-\Documents\luna game engine\bin\Debug\net9.0\assets\icons\LunaIcon.png
+C:\Users\josy-\Documents\luna game engine\bin\Debug\net9.0\assets\icons\LunaPauseIcon.png
+C:\Users\josy-\Documents\luna game engine\bin\Debug\net9.0\assets\icons\LunaPlayIcon.png
+C:\Users\josy-\Documents\luna game engine\bin\Debug\net9.0\assets\shaders\basic.frag
+C:\Users\josy-\Documents\luna game engine\bin\Debug\net9.0\assets\shaders\basic.vert
+C:\Users\josy-\Documents\luna game engine\bin\Debug\net9.0\assets\shaders\batch.frag
+C:\Users\josy-\Documents\luna game engine\bin\Debug\net9.0\assets\shaders\batch.vert
+C:\Users\josy-\Documents\luna game engine\bin\Debug\net9.0\assets\shaders\quad.frag
+C:\Users\josy-\Documents\luna game engine\bin\Debug\net9.0\assets\shaders\quad.vert
+C:\Users\josy-\Documents\luna game engine\bin\Debug\net9.0\assets\shaders\screen.frag
+C:\Users\josy-\Documents\luna game engine\bin\Debug\net9.0\assets\shaders\screen.vert
+C:\Users\josy-\Documents\luna game engine\bin\Debug\net9.0\assets\SORA-BOLD.TTF
+C:\Users\josy-\Documents\luna game engine\bin\Debug\net9.0\assets\SORA-EXTRABOLD.TTF
+C:\Users\josy-\Documents\luna game engine\bin\Debug\net9.0\assets\SORA-REGULAR.TTF
+C:\Users\josy-\Documents\luna game engine\bin\Debug\net9.0\assets\textures\IDLE.png
+C:\Users\josy-\Documents\luna game engine\bin\Debug\net9.0\assets\textures\idle_down.png
+C:\Users\josy-\Documents\luna game engine\bin\Debug\net9.0\assets\textures\player.png
