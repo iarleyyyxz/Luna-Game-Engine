@@ -2,6 +2,19 @@
   "version": 3,
   "targets": {
     "net9.0": {
+      "Frent/0.6.1-beta": {
+        "type": "package",
+        "compile": {
+          "lib/net9.0/Frent.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net9.0/Frent.dll": {
+            "related": ".xml"
+          }
+        }
+      },
       "Microsoft.Win32.SystemEvents/9.0.10": {
         "type": "package",
         "compile": {
@@ -267,6 +280,26 @@
     }
   },
   "libraries": {
+    "Frent/0.6.1-beta": {
+      "sha512": "aVEWRD1kNX/qIrj1fcdwgProT4sEIpyJu7cjr9k0TpwJvLOVUl0XJ+STYwU/qdnlUKowzQiE0x5OEflFXihivg==",
+      "type": "package",
+      "path": "frent/0.6.1-beta",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "LICENSE.md",
+        "README.md",
+        "analyzers/dotnet/cs/Frent.Generator.dll",
+        "frent.0.6.1-beta.nupkg.sha512",
+        "frent.nuspec",
+        "lib/net8.0/Frent.dll",
+        "lib/net8.0/Frent.xml",
+        "lib/net9.0/Frent.dll",
+        "lib/net9.0/Frent.xml",
+        "lib/netstandard2.1/Frent.dll",
+        "lib/netstandard2.1/Frent.xml"
+      ]
+    },
     "Microsoft.Win32.SystemEvents/9.0.10": {
       "sha512": "P1CEtsxar/RhfoH3r1vc9ra28LLVYphpcFBxyRIEMM/jP3qh4j9TU4sWH2RUhMZX+GbFxZ+zz1oSP2n9MwjshA==",
       "type": "package",
@@ -582,6 +615,7 @@
   },
   "projectFileDependencyGroups": {
     "net9.0": [
+      "Frent >= 0.6.1-beta",
       "OpenTK >= 4.9.4",
       "SDL2-CS >= 2.0.0",
       "StbImageSharp >= 2.30.15",
@@ -631,6 +665,10 @@
       "net9.0": {
         "targetAlias": "net9.0",
         "dependencies": {
+          "Frent": {
+            "target": "Package",
+            "version": "[0.6.1-beta, )"
+          },
           "OpenTK": {
             "target": "Package",
             "version": "[4.9.4, )"

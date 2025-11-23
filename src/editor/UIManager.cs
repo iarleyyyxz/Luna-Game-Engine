@@ -48,7 +48,7 @@ namespace Luna.Editor
         public static void Update()
         {
             var snapshot = elements.ToArray();
-            foreach (var element in snapshot)
+            foreach (var element in snapshot) 
                 element.Update();
         }
 

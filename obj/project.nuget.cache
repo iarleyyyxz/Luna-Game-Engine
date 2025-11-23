@@ -1,9 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "FK8koBaJHxs=",
+  "dgSpecHash": "8h339dn8nMI=",
   "success": true,
   "projectFilePath": "C:\\Users\\josy-\\Documents\\luna game engine\\luna game engine.csproj",
   "expectedPackageFiles": [
+    "C:\\Users\\josy-\\.nuget\\packages\\frent\\0.6.1-beta\\frent.0.6.1-beta.nupkg.sha512",
     "C:\\Users\\josy-\\.nuget\\packages\\microsoft.win32.systemevents\\9.0.10\\microsoft.win32.systemevents.9.0.10.nupkg.sha512",
     "C:\\Users\\josy-\\.nuget\\packages\\opentk\\4.9.4\\opentk.4.9.4.nupkg.sha512",
     "C:\\Users\\josy-\\.nuget\\packages\\opentk.audio.openal\\4.9.4\\opentk.audio.openal.4.9.4.nupkg.sha512",

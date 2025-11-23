@@ -44,6 +44,10 @@
         "net9.0": {
           "targetAlias": "net9.0",
           "dependencies": {
+            "Frent": {
+              "target": "Package",
+              "version": "[0.6.1-beta, )"
+            },
             "OpenTK": {
               "target": "Package",
               "version": "[4.9.4, )"

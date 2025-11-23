@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using OpenTK.Graphics.OpenGL4;
 using System.Numerics;
+using Luna.Core;
 
 namespace Luna.g2d.Renderer
 {
@@ -22,79 +23,79 @@ namespace Luna.g2d.Renderer
         private Shader shader;
 
         public SpriteBatch2D()
-{
-    shader = new Shader("assets/shaders/batch.vert", "assets/shaders/batch.frag");
-
-    // Habilita blending (importante para sprites com alpha)
-        GL.Enable(EnableCap.Blend);
-        GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
-
-        // Configure shader sampler array (uTextures = [0,1,2,...])
-        shader.Use();
-        int texLoc = GL.GetUniformLocation(shader.Handle, "uTextures");
-        if (texLoc != -1)
         {
-        // 16 slots (mude se precisar mais)
-            int[] units = new int[16];
-            for (int i = 0; i < units.Length; i++) units[i] = i;
-            GL.Uniform1(texLoc, units.Length, units);
+            shader = ResourceManager.LoadShader("assets/shaders/batch.vert", "assets/shaders/batch.frag");
+
+        // Habilita blending (importante para sprites com alpha)
+            GL.Enable(EnableCap.Blend);
+            GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
+
+            // Configure shader sampler array (uTextures = [0,1,2,...])
+            shader.Use();
+            int texLoc = GL.GetUniformLocation(shader.Handle, "uTextures");
+            if (texLoc != -1)
+            {
+            // 16 slots (mude se precisar mais)
+                int[] units = new int[16];
+                for (int i = 0; i < units.Length; i++) units[i] = i;
+                GL.Uniform1(texLoc, units.Length, units);
+            }
+            else
+            {
+                Console.WriteLine("[SpriteBatch2D] Warning: 'uTextures' uniform not found.");
+            }
+
+            vao = GL.GenVertexArray();
+            vbo = GL.GenBuffer();
+            ebo = GL.GenBuffer();
+
+            GL.BindVertexArray(vao);
+
+            GL.BindBuffer(BufferTarget.ArrayBuffer, vbo);
+            GL.BufferData(BufferTarget.ArrayBuffer, vertices.Length * FLOAT_SIZE, IntPtr.Zero, BufferUsageHint.DynamicDraw);
+
+            // Create index buffer
+            uint[] indices = new uint[MaxSprites * 6];
+            uint offset = 0;
+            for (int i = 0; i < indices.Length; i += 6)
+            {
+                indices[i] = offset + 0;
+                indices[i + 1] = offset + 1;
+                indices[i + 2] = offset + 2;
+                indices[i + 3] = offset + 2;
+                indices[i + 4] = offset + 3;
+                indices[i + 5] = offset + 0;
+                offset += 4;
+            }
+
+            GL.BindBuffer(BufferTarget.ElementArrayBuffer, ebo);
+            GL.BufferData(BufferTarget.ElementArrayBuffer, indices.Length * sizeof(uint), indices, BufferUsageHint.StaticDraw);
+
+            // Vertex attributes (stride in bytes)
+            int stride = VERTEX_SIZE * FLOAT_SIZE;
+
+            // aPosition (location = 0) vec2
+            GL.EnableVertexAttribArray(0);
+            GL.VertexAttribPointer(0, 2, VertexAttribPointerType.Float, false, stride, 0);
+
+            // aUV (location = 1) vec2
+            GL.EnableVertexAttribArray(1);
+            GL.VertexAttribPointer(1, 2, VertexAttribPointerType.Float, false, stride, 2 * FLOAT_SIZE);
+
+            // aColor (location = 2) vec4
+            GL.EnableVertexAttribArray(2);
+            GL.VertexAttribPointer(2, 4, VertexAttribPointerType.Float, false, stride, 4 * FLOAT_SIZE);
+
+            // aTexIndex (location = 3) float
+            GL.EnableVertexAttribArray(3);
+            GL.VertexAttribPointer(3, 1, VertexAttribPointerType.Float, false, stride, 8 * FLOAT_SIZE);
+
+            // aLayer (location = 4) float
+            GL.EnableVertexAttribArray(4);
+            GL.VertexAttribPointer(4, 1, VertexAttribPointerType.Float, false, stride, 9 * FLOAT_SIZE);
+
+            GL.BindVertexArray(0);
         }
-        else
-        {
-            Console.WriteLine("[SpriteBatch2D] Warning: 'uTextures' uniform not found.");
-        }
-
-        vao = GL.GenVertexArray();
-        vbo = GL.GenBuffer();
-        ebo = GL.GenBuffer();
-
-        GL.BindVertexArray(vao);
-
-        GL.BindBuffer(BufferTarget.ArrayBuffer, vbo);
-        GL.BufferData(BufferTarget.ArrayBuffer, vertices.Length * FLOAT_SIZE, IntPtr.Zero, BufferUsageHint.DynamicDraw);
-
-        // Create index buffer
-        uint[] indices = new uint[MaxSprites * 6];
-        uint offset = 0;
-        for (int i = 0; i < indices.Length; i += 6)
-        {
-            indices[i] = offset + 0;
-            indices[i + 1] = offset + 1;
-            indices[i + 2] = offset + 2;
-            indices[i + 3] = offset + 2;
-            indices[i + 4] = offset + 3;
-            indices[i + 5] = offset + 0;
-            offset += 4;
-        }
-
-        GL.BindBuffer(BufferTarget.ElementArrayBuffer, ebo);
-        GL.BufferData(BufferTarget.ElementArrayBuffer, indices.Length * sizeof(uint), indices, BufferUsageHint.StaticDraw);
-
-        // Vertex attributes (stride in bytes)
-        int stride = VERTEX_SIZE * FLOAT_SIZE;
-
-        // aPosition (location = 0) vec2
-        GL.EnableVertexAttribArray(0);
-        GL.VertexAttribPointer(0, 2, VertexAttribPointerType.Float, false, stride, 0);
-
-        // aUV (location = 1) vec2
-        GL.EnableVertexAttribArray(1);
-        GL.VertexAttribPointer(1, 2, VertexAttribPointerType.Float, false, stride, 2 * FLOAT_SIZE);
-
-        // aColor (location = 2) vec4
-        GL.EnableVertexAttribArray(2);
-        GL.VertexAttribPointer(2, 4, VertexAttribPointerType.Float, false, stride, 4 * FLOAT_SIZE);
-
-        // aTexIndex (location = 3) float
-        GL.EnableVertexAttribArray(3);
-        GL.VertexAttribPointer(3, 1, VertexAttribPointerType.Float, false, stride, 8 * FLOAT_SIZE);
-
-        // aLayer (location = 4) float
-        GL.EnableVertexAttribArray(4);
-        GL.VertexAttribPointer(4, 1, VertexAttribPointerType.Float, false, stride, 9 * FLOAT_SIZE);
-
-        GL.BindVertexArray(0);
-    }
 
 
         public void Begin()

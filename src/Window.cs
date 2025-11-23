@@ -28,6 +28,7 @@ public class Window
     // UI
     private UIViewport viewport;
     private PlayPauseBar playPauseBar;
+    private Menubar menubar;
 
     // Debug object
     private GameObject player;
@@ -140,52 +141,79 @@ public class Window
     }
 
     private void CreateUI()
+{
+    // VIEWPORT onde o game é renderizado
+    viewport = new UIViewport(_renderer, 120, 120, 640, 360, framebuffer);
+    UIManager.Add(viewport);
+
+    // PLAY / PAUSE BAR
+    IntPtr playIcon = LoadTexture(_renderer, "assets/icons/LunaPlayIcon.png");
+    IntPtr pauseIcon = LoadTexture(_renderer, "assets/icons/LunaPauseIcon.png");
+
+    playPauseBar = new PlayPauseBar(playIcon, pauseIcon, viewport.X, viewport.Y - 50);
+    UIManager.Add(playPauseBar);
+
+    // MENUBAR
+    menubar = new Menubar
     {
-        // VIEWPORT where the game is rendered
-        viewport = new UIViewport(_renderer, 120, 120, 640, 360, framebuffer);
-        UIManager.Add(viewport);
+        X = 0,
+        Y = 0,
+        Width = UIManager.ScreenWidth,
+        Height = 30
+    };
 
-        // PLAY / PAUSE BAR
-        IntPtr playIcon = LoadTexture(_renderer, "assets/icons/LunaPlayIcon.png");
-        IntPtr pauseIcon = LoadTexture(_renderer, "assets/icons/LunaPauseIcon.png");
+    // Menu "File"
+    Menu fileMenu = new Menu { Title = "File" };
+    fileMenu.AddMenuItem(new MenuItem("New", () => Console.WriteLine("New file created")));
+    fileMenu.AddMenuItem(new MenuItem("Open", () => Console.WriteLine("Open file dialog")));
+    fileMenu.AddMenuItem(new MenuItem("Save", () => Console.WriteLine("Save file")));
 
-        playPauseBar = new PlayPauseBar(playIcon, pauseIcon, viewport.X, viewport.Y - 50);
-        UIManager.Add(playPauseBar);
-    }
+    // Menu "Edit"
+    Menu editMenu = new Menu { Title = "Edit" };
+    editMenu.AddMenuItem(new MenuItem("Undo", () => Console.WriteLine("Undo action")));
+    editMenu.AddMenuItem(new MenuItem("Redo", () => Console.WriteLine("Redo action")));
+
+    menubar.AddMenu(fileMenu);
+    menubar.AddMenu(editMenu);
+
+    // Adiciona ao UIManager para desenho e atualização automáticos
+    UIManager.Add(menubar);
+}
 
     public void Run()
+{
+    while (IsRunning)
     {
-        while (IsRunning)
-        {
-            ProcessEvents();
+        ProcessEvents();
 
-            // Render Game World
-            framebuffer.Bind();
-            GL.Viewport(0, 0, framebuffer.Width, framebuffer.Height);
+        // --- Render Game World no Framebuffer via OpenGL ---
+        framebuffer.Bind();
+        GL.Viewport(0, 0, framebuffer.Width, framebuffer.Height);
 
-            GL.ClearColor(0.0f, 0.0f, 0.0f, 1f);
-            GL.Clear(ClearBufferMask.ColorBufferBit);
+        GL.ClearColor(0.5f, 0.5f, 1.0f, 1f);
+        GL.Clear(ClearBufferMask.ColorBufferBit);
 
-            if (!SceneManager.CurrentScene.Paused)
-                SceneManager.CurrentScene.Update(Time.DeltaTime, framebuffer.Width, framebuffer.Height);
+        if (!SceneManager.CurrentScene.Paused)
+            SceneManager.CurrentScene.Update(Time.DeltaTime, framebuffer.Width, framebuffer.Height);
 
-            framebuffer.Unbind();
-            framebuffer.ReadToSDLTexture();
+        framebuffer.Unbind();
+        framebuffer.ReadToSDLTexture(); // Copia framebuffer para SDL Texture
 
-            // Render UI + Framebuffer
-            SDL.SDL_SetRenderDrawColor(_renderer, 25, 25, 25, 255);
-            SDL.SDL_RenderClear(_renderer);
+        // --- Render UI via SDL_Renderer ---
+        SDL.SDL_SetRenderDrawColor(_renderer, 25, 25, 25, 255);
+        SDL.SDL_RenderClear(_renderer);
 
-            UIManager.Draw(_renderer);
-            UIManager.Update();
+        UIManager.Update();    // Atualiza todos elementos adicionados
+        UIManager.Draw(_renderer); // Desenha todos elementos adicionados, incluindo menubar
 
-            SDL.SDL_RenderPresent(_renderer);
+        SDL.SDL_RenderPresent(_renderer);
 
-            Time.Update();
-        }
-
-        Quit();
+        Time.Update();
     }
+
+    Quit();
+}
+
 
     private void ProcessEvents()
     {
