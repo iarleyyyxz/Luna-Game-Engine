@@ -141,44 +141,44 @@ public class Window
     }
 
     private void CreateUI()
-{
-    // VIEWPORT onde o game é renderizado
-    viewport = new UIViewport(_renderer, 120, 120, 640, 360, framebuffer);
-    UIManager.Add(viewport);
-
-    // PLAY / PAUSE BAR
-    IntPtr playIcon = LoadTexture(_renderer, "assets/icons/LunaPlayIcon.png");
-    IntPtr pauseIcon = LoadTexture(_renderer, "assets/icons/LunaPauseIcon.png");
-
-    playPauseBar = new PlayPauseBar(playIcon, pauseIcon, viewport.X, viewport.Y - 50);
-    UIManager.Add(playPauseBar);
-
-    // MENUBAR
-    menubar = new Menubar
     {
-        X = 0,
-        Y = 0,
-        Width = UIManager.ScreenWidth,
-        Height = 30
-    };
+        // VIEWPORT onde o game é renderizado
+        viewport = new UIViewport(_renderer, 120, 120, 640, 360, framebuffer);
+        UIManager.Add(viewport);
 
-    // Menu "File"
-    Menu fileMenu = new Menu { Title = "File" };
-    fileMenu.AddMenuItem(new MenuItem("New", () => Console.WriteLine("New file created")));
-    fileMenu.AddMenuItem(new MenuItem("Open", () => Console.WriteLine("Open file dialog")));
-    fileMenu.AddMenuItem(new MenuItem("Save", () => Console.WriteLine("Save file")));
+        // PLAY / PAUSE BAR
+        IntPtr playIcon = LoadTexture(_renderer, "assets/icons/LunaPlayIcon.png");
+        IntPtr pauseIcon = LoadTexture(_renderer, "assets/icons/LunaPauseIcon.png");
 
-    // Menu "Edit"
-    Menu editMenu = new Menu { Title = "Edit" };
-    editMenu.AddMenuItem(new MenuItem("Undo", () => Console.WriteLine("Undo action")));
-    editMenu.AddMenuItem(new MenuItem("Redo", () => Console.WriteLine("Redo action")));
+        playPauseBar = new PlayPauseBar(playIcon, pauseIcon, viewport.X, viewport.Y - 50);
+        UIManager.Add(playPauseBar);
 
-    menubar.AddMenu(fileMenu);
-    menubar.AddMenu(editMenu);
+        // MENUBAR
+        menubar = new Menubar
+        {
+            X = 0,
+            Y = 0,
+            Width = UIManager.ScreenWidth,
+            Height = 30
+        };
 
-    // Adiciona ao UIManager para desenho e atualização automáticos
-    UIManager.Add(menubar);
-}
+        // Menu "File"
+        Menu fileMenu = new Menu { Title = "File" };
+        fileMenu.AddMenuItem(new MenuItem("New", () => Console.WriteLine("New file created")));
+        fileMenu.AddMenuItem(new MenuItem("Open", () => Console.WriteLine("Open file dialog")));
+        fileMenu.AddMenuItem(new MenuItem("Save", () => Console.WriteLine("Save file")));
+
+        // Menu "Edit"
+        Menu editMenu = new Menu { Title = "Edit" };
+        editMenu.AddMenuItem(new MenuItem("Undo", () => Console.WriteLine("Undo action")));
+        editMenu.AddMenuItem(new MenuItem("Redo", () => Console.WriteLine("Redo action")));
+
+        menubar.AddMenu(fileMenu);
+        menubar.AddMenu(editMenu);
+
+        // Adiciona ao UIManager para desenho e atualização automáticos
+        UIManager.Add(menubar);
+    }
 
     public void Run()
 {
