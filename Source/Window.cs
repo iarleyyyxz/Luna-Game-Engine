@@ -161,8 +161,7 @@ public class Window
             GL.ClearColor(0.5f, 0.5f, 1.0f, 1f);
             GL.Clear(ClearBufferMask.ColorBufferBit);
 
-            if (!SceneManager.CurrentScene.Paused)
-                SceneManager.CurrentScene.Update(Time.DeltaTime, framebuffer.Width, framebuffer.Height);
+           
 
             framebuffer.Unbind();
             framebuffer.ReadToSDLTexture(); // Copia framebuffer para SDL Texture

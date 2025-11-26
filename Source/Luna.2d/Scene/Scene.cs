@@ -1,53 +1,49 @@
+using Frent;
 using Luna.Ecs;
+using Luna.g2d.Interfaces;
+using Luna.g2d.Providers;
 using Luna.g2d.Renderer;
 
 namespace Luna.g2d.Scene
 {
-    public class Scene
+    public class Scene : IScene
     {
-        public string Name { get; private set; }
-        public List<GameObject> gameObjects = new();
+        private SystemProvider systems;
 
-        public bool Paused { get; set; }
+        private World World2D;
 
-        public Scene(string scName)
-        {
-            Name = scName;
-        }
-
-        public void AddGameObject(GameObject go)
-        {
-            gameObjects.Add(go);
-        }
-
-        public void RemoveGameObject(GameObject go)
-        {
-            gameObjects.Remove(go);
-        }
+        private Camera2D Camera2D;
 
         public void Start()
         {
-            foreach (var go in gameObjects)
-                go.Start();
+            World2D = new World();
+            systems = new SystemProvider();
         }
 
-        public void Update(float dt, int w, int h)
+        public void Stop()
         {
-            Renderer2D.Begin();
-
-            foreach (var go in gameObjects)
-                go.Update(dt);
-
-            Renderer2D.End(w, h);
+            
         }
 
-
-        public void Unload()
+        public void Update(float deltaTime)
         {
-            foreach (var go in gameObjects)
-                go.OnDestroy();
-
-            gameObjects.Clear();
+            systems.Update(deltaTime);
         }
+
+        public Camera2D GetCamera()
+        {
+            return Camera2D;
+        }
+
+        public SystemProvider GetSystems()
+        {
+            return systems;   
+        }
+
+        public World GetWorld()
+        {
+            return World2D;
+        }
+
     }
 }
