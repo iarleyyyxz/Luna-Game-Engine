@@ -1,5 +1,4 @@
 ﻿using System;
-using Luna.Ecs;
 using SDL2;
 using Luna;
 class Program

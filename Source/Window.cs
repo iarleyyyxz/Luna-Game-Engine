@@ -6,7 +6,6 @@ using Luna.Util;
 using OpenTK.Graphics.OpenGL4;
 using Luna.Renderer;
 using Luna.g2d;
-using Luna.Ecs;
 using System.Numerics;
 using Luna.g2d.Scene;
 
@@ -31,7 +30,6 @@ public class Window
     private Menubar menubar;
 
     // Debug object
-    private GameObject player;
 
     public Window(string title, int width, int height)
     {
@@ -44,7 +42,7 @@ public class Window
 
         LoadFonts();
         CreateFrameBuffer();
-        CreateScene();
+       // CreateScene();
         CreateUI();
 
         IsRunning = true;
@@ -110,36 +108,6 @@ public class Window
         framebuffer = new FrameBuffer2D(_renderer, 640, 360);
     }
 
-    private void CreateScene()
-    {
-        Scene scene = new Scene("scene");
-
-        player = new GameObject("Player");
-
-        var transform = player.AddComponent<Transform2D>();
-        transform.Position = new Vector2(300, 200);
-        transform.Scale = new Vector2(155, 155);
-
-        var renderer = player.AddComponent<SpriteRenderer>();
-        renderer.Sprite = new Sprite2D("assets/textures/player.png");
-
-        GameObject player2 = new GameObject("Player2");
-
-        var transform2 = player2.AddComponent<Transform2D>();
-        transform2.Position = new Vector2(50, 20);
-        transform2.Scale = new Vector2(400, 400);
-
-        var renderer2 = player2.AddComponent<SpriteRenderer>();
-        renderer2.Sprite = new Sprite2D("assets/textures/player.png");
-
-        scene.AddGameObject(player2);
-
-        scene.AddGameObject(player);
-
-        SceneManager.AddScene(scene);
-        SceneManager.LoadScene("scene");
-    }
-
     private void CreateUI()
     {
         // VIEWPORT onde o game é renderizado
@@ -181,34 +149,34 @@ public class Window
     }
 
     public void Run()
-{
-    while (IsRunning)
     {
-        ProcessEvents();
+        while (IsRunning)
+        {
+            ProcessEvents();
 
-        // --- Render Game World no Framebuffer via OpenGL ---
-        framebuffer.Bind();
-        GL.Viewport(0, 0, framebuffer.Width, framebuffer.Height);
+            // --- Render Game World no Framebuffer via OpenGL ---
+            framebuffer.Bind();
+            GL.Viewport(0, 0, framebuffer.Width, framebuffer.Height);
 
-        GL.ClearColor(0.5f, 0.5f, 1.0f, 1f);
-        GL.Clear(ClearBufferMask.ColorBufferBit);
+            GL.ClearColor(0.5f, 0.5f, 1.0f, 1f);
+            GL.Clear(ClearBufferMask.ColorBufferBit);
 
-        if (!SceneManager.CurrentScene.Paused)
-            SceneManager.CurrentScene.Update(Time.DeltaTime, framebuffer.Width, framebuffer.Height);
+            if (!SceneManager.CurrentScene.Paused)
+                SceneManager.CurrentScene.Update(Time.DeltaTime, framebuffer.Width, framebuffer.Height);
 
-        framebuffer.Unbind();
-        framebuffer.ReadToSDLTexture(); // Copia framebuffer para SDL Texture
+            framebuffer.Unbind();
+            framebuffer.ReadToSDLTexture(); // Copia framebuffer para SDL Texture
 
-        // --- Render UI via SDL_Renderer ---
-        SDL.SDL_SetRenderDrawColor(_renderer, 25, 25, 25, 255);
-        SDL.SDL_RenderClear(_renderer);
+            // --- Render UI via SDL_Renderer ---
+            SDL.SDL_SetRenderDrawColor(_renderer, 25, 25, 25, 255);
+            SDL.SDL_RenderClear(_renderer);
 
-        UIManager.Update();    // Atualiza todos elementos adicionados
-        UIManager.Draw(_renderer); // Desenha todos elementos adicionados, incluindo menubar
+            UIManager.Update();    // Atualiza todos elementos adicionados
+            UIManager.Draw(_renderer); // Desenha todos elementos adicionados, incluindo menubar
 
-        SDL.SDL_RenderPresent(_renderer);
+            SDL.SDL_RenderPresent(_renderer);
 
-        Time.Update();
+            Time.Update();
     }
 
     Quit();
