@@ -16,6 +16,12 @@ namespace Luna.g2d
         public Matrix4x4 InverseView;
         public Matrix4x4 InverseProjection;
         public Transform2D Transform;
-        public Tag IsMainCamera;
+        public bool IsMainCamera;
+
+        public bool FollowTarget;
+        public Entity Target;
+        public float FollowSmoothing;
+
+        
     }
 }
